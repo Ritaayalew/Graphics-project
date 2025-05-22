@@ -25,8 +25,8 @@ export function createProduct() {
   group.add(waist);
 
   // Add Subtle Cylindrical Bands for Detail
-  const bandGeometry = new THREE.CylinderGeometry(0.42, 0.42, 0.05, 32); // Adjusted radius for thicker waist
-  const bandMaterial = new THREE.MeshStandardMaterial({ color: 0x704214 }); // Lighter wood tone
+  const bandGeometry = new THREE.CylinderGeometry(0.42, 0.42, 0.08, 32); // Adjusted radius for thicker waist
+  const bandMaterial = new THREE.MeshStandardMaterial({ color: 0x0D0D00 }); // Lighter wood tone
   const band1 = new THREE.Mesh(bandGeometry, bandMaterial);
   band1.position.set(0, 0.3, 0);
   band1.name = 'Waist Band 1';
@@ -53,7 +53,7 @@ export function createProduct() {
   // 3. Tension Ropes (Connected to Top and Bottom Drumheads)
   const ropeGeometry = new THREE.CylinderGeometry(0.03, 0.03, 1.7, 16); // Fixed length
   const ropeMaterial = new THREE.MeshStandardMaterial({ color: 0x8B5A2B }); // Natural brown
-  const numRopes = 12; // Reduced for authenticity
+  const numRopes = 16; // Reduced for authenticity
   for (let i = 0; i < numRopes; i++) {
     const angle = (i / numRopes) * Math.PI * 2;
     // Define exact endpoints at drumhead edges
