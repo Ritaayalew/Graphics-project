@@ -224,40 +224,27 @@ export function createProduct() {
   // Beaded Necklace
   const beadGeometry = new THREE.SphereGeometry(0.03, 16, 16);
   const beadMaterial = new THREE.MeshStandardMaterial({ color: 0xFF4500 }); // Red beads
-  const stringGeometry = new THREE.TorusGeometry(0.4, 0.01, 16, 32);
+  const stringGeometry = new THREE.TorusGeometry(0.32, 0.01, 16, 32);
   const stringMaterial = new THREE.MeshStandardMaterial({ color: 0xFFFF00 }); // Yellow string
   const necklaceString = new THREE.Mesh(stringGeometry, stringMaterial);
-  necklaceString.position.set(0, 1.6, 0);
+  necklaceString.position.set(0, 1.43, 0); // Lowered to below head
   necklaceString.rotation.x = Math.PI / 2;
   group.add(necklaceString);
 
   const numBeads = 12;
   for (let i = 0; i < numBeads; i++) {
     const angle = (i / numBeads) * Math.PI * 2;
-    const beadX = 0.4 * Math.cos(angle);
-    const beadZ = 0.4 * Math.sin(angle);
+    const beadX = 0.33 * Math.cos(angle);
+    const beadZ = 0.33 * Math.sin(angle);
     const bead = new THREE.Mesh(beadGeometry, beadMaterial);
-    bead.position.set(beadX, 1.6, beadZ);
+    bead.position.set(beadX, 1.43, beadZ);
     group.add(bead);
 
-    // Add green beads alternating
-    if (i % 2 === 0) {
-      const greenBead = new THREE.Mesh(beadGeometry, new THREE.MeshStandardMaterial({ color: 0x008000 }));
-      greenBead.position.set(beadX, 1.58, beadZ);
-      group.add(greenBead);
-    }
+    // Add green bead for every red bead
+    const greenBead = new THREE.Mesh(beadGeometry, new THREE.MeshStandardMaterial({ color: 0x008000 }));
+    greenBead.position.set(beadX, 1.432, beadZ);
+    group.add(greenBead);
   }
-
-  // Tribal Wristbands
-  const wristbandGeometry = new THREE.CylinderGeometry(0.2, 0.2, 0.03, 32);
-  const wristbandMaterial = new THREE.MeshStandardMaterial({ color: 0xDAA520 }); // Goldish tone
-  const leftWristband = new THREE.Mesh(wristbandGeometry, wristbandMaterial);
-  leftWristband.position.set(-0.36, 1.35, 0);
-  group.add(leftWristband);
-
-  const rightWristband = leftWristband.clone();
-  rightWristband.position.set(0.36, 1.35, 0);
-  group.add(rightWristband);
 
   // Anklets
   const ankletGeometry = new THREE.CylinderGeometry(0.2, 0.2, 0.03, 32);
