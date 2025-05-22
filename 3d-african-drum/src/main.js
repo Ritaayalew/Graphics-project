@@ -1,24 +1,26 @@
-import './style.css'
-import javascriptLogo from './javascript.svg'
-import viteLogo from '/vite.svg'
-import { setupCounter } from './counter.js'
+import * as THREE from 'three';
+import { initScene } from './initScene.js';
+import { addLighting } from './addLighting.js';
+import { setupInteraction } from './interaction.js';
+import { animateCamera } from './cameraAnimation.js';
 
-document.querySelector('#app').innerHTML = `
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">
-      <img src="${javascriptLogo}" class="logo vanilla" alt="JavaScript logo" />
-    </a>
-    <h1>Hello Vite!</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite logo to learn more
-    </p>
-  </div>
-`
+// Initialize the scene
+const { scene, camera, renderer, controls, product } = initScene();
 
-setupCounter(document.querySelector('#counter'))
+// Add lighting
+addLighting(scene);
+
+// Set up interaction
+setupInteraction(camera, scene, product);
+
+// Set up camera animation
+const animate = animateCamera(camera, controls);
+
+// Animation loop
+function animateLoop() {
+  requestAnimationFrame(animateLoop);
+  animate(); // Update camera position
+  controls.update(); // Update controls
+  renderer.render(scene, camera);
+}
+animateLoop();
