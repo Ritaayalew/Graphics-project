@@ -5,22 +5,27 @@ import { setupInteraction } from './interaction.js';
 import { animateCamera } from './cameraAnimation.js';
 
 // Initialize the scene
-const { scene, camera, renderer, controls, product } = initScene();
+const { scene, camera, renderer, drumControls, teddyControls, drumGroup, teddyBearGroup } = initScene();
 
 // Add lighting
 addLighting(scene);
 
 // Set up interaction
-setupInteraction(camera, scene, product);
+const isTeddyActive = setupInteraction(camera, scene, drumGroup, teddyBearGroup, drumControls, teddyControls, camera);
 
-// Set up camera animation
-const animate = animateCamera(camera, controls);
+// Set up camera animation for drum
+const animateCam = animateCamera(camera, drumControls, drumGroup, true);
 
 // Animation loop
 function animateLoop() {
   requestAnimationFrame(animateLoop);
-  animate(); // Update camera position
-  controls.update(); // Update controls
+
+  // Update camera auto-rotation for drum
+  animateCam(camera, drumControls, drumGroup, !isTeddyActive());
+
+  // Update drum controls
+  drumControls.update();
+
   renderer.render(scene, camera);
 }
 animateLoop();
