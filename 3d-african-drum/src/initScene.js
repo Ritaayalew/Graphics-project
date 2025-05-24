@@ -5,16 +5,49 @@ import { addLighting } from './addLighting.js';
 import { animateCamera } from './cameraAnimation.js';
 import { setupInteraction } from './interaction.js';
 
-// Initialize the scene, camera, renderer, and controls
 export function initScene() {
   const scene = new THREE.Scene();
+  
+  // Create background
+  const canvas = document.createElement('canvas');
+  canvas.width = 2048;
+  canvas.height = 1024;
+  const context = canvas.getContext('2d');
+  const gradient = context.createLinearGradient(0, 0, 0, canvas.height);
+  gradient.addColorStop(0, '#000004');
+  gradient.addColorStop(0.5, '#020007');
+  gradient.addColorStop(1, '#030008');
+  context.fillStyle = gradient;
+  context.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Add stars
+  for (let i = 0; i < 800; i++) {
+    const x = Math.random() * canvas.width;
+    const y = Math.random() * canvas.height;
+    const radius = Math.random() * 1.2;
+    const alpha = Math.random() * 0.8 + 0.2;
+    const hue = Math.random() * 20 + 240;
+    context.beginPath();
+    context.arc(x, y, radius, 0, Math.PI * 2);
+    context.fillStyle = `hsla(${hue}, 70%, 85%, ${alpha})`;
+    context.fill();
+  }
+
+  const backgroundTexture = new THREE.CanvasTexture(canvas);
+  scene.background = backgroundTexture;
+  
   const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
   const renderer = new THREE.WebGLRenderer({ antialias: true });
+  
+  // Enable shadows
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(window.devicePixelRatio); // Add this for better quality on high-DPI displays
+  renderer.setPixelRatio(window.devicePixelRatio);
   document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-  // Add the products (drum and teddy bear)
+  // Add products
   const { drumGroup, teddyBearGroup } = createProduct();
   scene.add(drumGroup);
   scene.add(teddyBearGroup);
@@ -26,57 +59,41 @@ export function initScene() {
   camera.position.set(0, 2, 5);
   camera.lookAt(drumGroup.position);
 
-  // Add OrbitControls for the drum (auto-rotation, zoom, pan)
+  // Add OrbitControls
   const drumControls = new OrbitControls(camera, renderer.domElement);
-  drumControls.enableRotate = false; // Disable manual rotation for auto-rotation
+  drumControls.enableRotate = false;
   drumControls.enableZoom = true;
   drumControls.enablePan = true;
-  drumControls.target.set(0, 0, 0); // Focus on drum center
+  drumControls.target.set(0, 0, 0);
 
-  // Dummy teddyControls (used as a flag for interaction)
   const teddyControls = { enabled: false };
 
-  // Set up camera auto-rotation for drum
+  // Set up camera animation
   const animateCam = animateCamera(camera, drumControls, drumGroup, true);
 
-  // Set up interaction (raycasting and control toggling)
+  // Set up interaction
   const isTeddyActive = setupInteraction(camera, scene, drumGroup, teddyBearGroup, drumControls, teddyControls, camera);
 
-  // Enhanced window resize handler
   function handleResize() {
     const width = window.innerWidth;
     const height = window.innerHeight;
-    
-    // Update renderer
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Cap at 2 for performance
-    
-    // Update camera
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
-    
-    console.log('Window resized to:', width, height);
   }
 
-  // Set up event listeners
   window.addEventListener('resize', handleResize);
-  handleResize(); // Call once to set initial sizes properly
+  handleResize();
 
-  // Animation loop
   function animate() {
     requestAnimationFrame(animate);
-
-    // Update drum controls
     drumControls.update();
-
-    // Update camera auto-rotation for drum
     animateCam(camera, drumControls, drumGroup, !isTeddyActive());
-
     renderer.render(scene, camera);
   }
   animate();
 
-  // Cleanup function (optional - useful if you need to destroy the scene later)
   function cleanup() {
     window.removeEventListener('resize', handleResize);
     renderer.dispose();
@@ -90,6 +107,6 @@ export function initScene() {
     teddyControls, 
     drumGroup, 
     teddyBearGroup,
-    cleanup // Export cleanup if needed
+    cleanup
   };
 }
